@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>kube-sim</title>
+<meta name="description" content="Cluster Kubernetes simulado no navegador com terminal e kubectl.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2.5 27.7 8.1l2.9 12.6-8.1 10.1H9.5L1.4 20.7l2.9-12.6z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="16" cy="17" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 7.5v5.3M16 21.2v5.3M7 12.4l5 2.6M20 19l5 2.6M7 21.6l5-2.6M20 15l5-2.6" stroke="currentColor" stroke-width="1.6"/></svg>
+      <span class="name">kube-sim</span>
+      <span class="ver">v1.31.0</span>
+    </div>
+    <span id="ctx" class="ctx">kind-sim</span>
+    <div class="actions">
+      <button type="button" id="btn-panel" class="btn" aria-pressed="true">Painel</button>
+      <button type="button" id="btn-reset" class="btn danger">Recriar cluster</button>
+    </div>
+  </header>
+  <div id="confirm-reset" class="confirm" hidden>
+    <span>Apagar todos os recursos e arquivos criados e iniciar um cluster novo?</span>
+    <button type="button" id="reset-yes" class="btn danger">Recriar agora</button>
+    <button type="button" id="reset-no" class="btn">Cancelar</button>
+  </div>
+  <main class="main">
+    <section class="termwrap" aria-label="Terminal">
+      <div id="term" class="term" role="log" aria-live="polite">
+        <div id="screen"></div>
+        <div id="input-line" class="input-line" hidden>
+          <span id="prompt"></span><input id="cmd" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Comando">
+        </div>
+      </div>
+    </section>
+    <aside class="panel" aria-label="Missões e estado do cluster">
+      <div class="tabs" role="tablist">
+        <button type="button" role="tab" id="tab-missions" aria-selected="true" aria-controls="view-missions">Missões <span class="count"></span></button>
+        <button type="button" role="tab" id="tab-cluster" aria-selected="false" aria-controls="view-cluster">Cluster</button>
+      </div>
+      <div id="view-missions" class="view" role="tabpanel" aria-labelledby="tab-missions"></div>
+      <div id="view-cluster" class="view" role="tabpanel" aria-labelledby="tab-cluster" hidden>
+      <div class="panel-head">
+        <h2>Nós e pods</h2>
+        <label class="sr" for="ns-filter">Namespace</label>
+        <select id="ns-filter"></select>
+      </div>
+      <div id="summary" class="summary"></div>
+      <div id="nodes" class="nodes"></div>
+      <div class="quick">
+        <h3>Comandos rápidos</h3>
+        <div class="chips">
+          <button type="button" data-cmd="kubectl get pods -A">get pods -A</button>
+          <button type="button" data-cmd="kubectl apply -f examples/nginx-deployment.yaml">apply nginx</button>
+          <button type="button" data-cmd="kubectl get pods -w">get pods -w</button>
+          <button type="button" data-cmd="kubectl apply -f examples/crashloop.yaml">CrashLoopBackOff</button>
+          <button type="button" data-cmd="kubectl apply -f examples/broken-image.yaml">ImagePullBackOff</button>
+          <button type="button" data-cmd="kubectl exec -it deploy/nginx-deployment -- bash">exec -it</button>
+          <button type="button" data-cmd="kubectl top pods -A">top pods</button>
+          <button type="button" data-cmd="kubectl get events -A --sort-by=.lastTimestamp">events</button>
+          <button type="button" data-cmd="ls examples/">ls examples/</button>
+          <button type="button" data-cmd="help">help</button>
+        </div>
+      </div>
+      </div>
+    </aside>
+  </main>
+</div>
+<div id="editor" class="editor" hidden role="dialog" aria-modal="true" aria-labelledby="editor-file">
+  <div class="editor-box">
+    <div class="editor-head">
+      <span class="tag">editor</span>
+      <span id="editor-file" class="file"></span>
+      <span class="hint">Ctrl+S salva · Esc sai sem salvar</span>
+    </div>
+    <label class="sr" for="editor-text">Conteúdo do arquivo</label>
+    <textarea id="editor-text" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea>
+    <div class="editor-foot">
+      <button type="button" id="editor-quit" class="btn">Sair sem salvar (:q!)</button>
+      <button type="button" id="editor-save" class="btn primary">Salvar e sair (:wq)</button>
+    </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+<script src="js/util.js"></script>
+<script src="js/schema.js"></script>
+<script src="js/sh.js"></script>
+<script src="js/images.js"></script>
+<script src="js/cluster.js"></script>
+<script src="js/controllers.js"></script>
+<script src="js/printers.js"></script>
+<script src="js/kubectl.js"></script>
+<script src="js/kubectl2.js"></script>
+<script src="js/examples.js"></script>
+<script src="js/shell.js"></script>
+<script src="js/terminal.js"></script>
+<script src="js/missions.js"></script>
+<div id="toast" class="toast" role="status" hidden></div>
+</body>
+</html>
